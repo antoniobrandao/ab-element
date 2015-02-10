@@ -1,0 +1,20 @@
+{
+  "name": "ab-element",
+  "version": "0.0.1",
+  "description": "DOM Element prototype addons",
+  "main": "index.js",
+  "keywords": [
+    "prototype",
+    "element"
+  ],
+  "license": "MIT",
+  "author": "Antonio Brandao <antoniobrandaodesign@gmail.com> (http://www.antoniobrandao.com/)",
+  "homepage": "https://github.com/antoniobrandao/ab-element",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/antoniobrandao/ab-element"
+  },
+  "bugs": {
+    "url": "https://github.com/antoniobrandao/ab-element/issues"
+  }
+}
