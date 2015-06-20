@@ -1,7 +1,7 @@
 {
   "name": "ab-element",
-  "version": "0.0.1",
-  "description": "DOM Element prototype addons",
+  "version": "1.0.2",
+  "description": "AB Element - DOM Element with super powers.",
   "main": "index.js",
   "keywords": [
     "prototype",

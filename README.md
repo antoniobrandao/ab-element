@@ -2,10 +2,24 @@
 
 DOM Element prototype addons.
 
+- - methods
 - Element.prototype.hasClass
 - Element.prototype.addClass
 - Element.prototype.removeClass
 - Element.prototype.toggleClass
+- Element.prototype.setChildOf
+- Element.prototype.preloadImagesAndCallBack (preloads all IMGs inside element and calls a given callBack)
+- Element.prototype.activateSuperPowers (activates x, y, z, width, height, rotation, scale, animated, opacity)
+
+- - properties
+- x
+- y
+- z
+- width
+- height
+- rotation
+- scale
+- animated
 
 ## Install
 
@@ -19,10 +33,21 @@ $ npm install ab-element --save-dev
 	
 	require('ab-element');
 
-	document.getElementById('some-el').hasClass('some-class');
-	document.getElementById('some-el').addClass('some-class');
-	document.getElementById('some-el').removeClass('some-class');
-	document.getElementById('some-el').toggleClass('some-class');
+	var test = document.createElement('DIV');
+	test.setChildOf(document.body);
+	test.activateSuperPowers();
+	test.animated = true;
+	test.x = 50;
+	test.y = 50;
+	test.width = 50;
+	test.height = 50;
+	test.hasClass('some-class');
+	test.addClass('some-class');
+	test.removeClass('some-class');
+	test.toggleClass('some-class');
+	test.bgColor = 'red';
+	test.scale = 3;
+	test.rotation = 45;
 
 ## License
 
