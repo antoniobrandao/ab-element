@@ -48,6 +48,111 @@ Element.prototype.preloadImagesAndCallBack = function (callBack) {
     }
 };
 
+Element.prototype.loadImageInside = function (src, onLoadCallBack, fadeIn, fadeInDuration) {
+    var img = document.createElement('IMG');
+    if (fadeIn) { img.style.opacity = 0; };
+    if (fadeIn || onLoadCallBack) {
+        img.onload = function() {
+            if (fadeIn) { 
+                img.style.webkitTransition   = 'all ' + fadeInDuration + 's';
+                img.style.mozTransition      = 'all ' + fadeInDuration + 's';
+                img.style.msTransition       = 'all ' + fadeInDuration + 's';
+                img.style.oTransition        = 'all ' + fadeInDuration + 's';
+                img.style.opacity            = 1;
+             };
+            if (onLoadCallBack) { onLoadCallBack(); };
+        }
+    }
+    img.setAttribute('src', src)
+    this.appendChild(img);
+};
+
+Element.prototype.loadImage = function(src, onLoadCallBack, fadeIn, fadeInDuration) {
+    var e = this;
+    if (this.tagName !== 'IMG') {
+        if (!this.parentNode) {
+            return console.error('Element.prototype.loadImage ::: element tagName is not IMG, needs parent for conversion.')
+        }
+        var d = document.createElement('IMG');
+        e.parentNode.insertBefore(d, e);
+        e.parentNode.removeChild(e);
+        var e = d;
+    };
+    var img = e;
+    if (fadeIn) { img.style.opacity = 0; };
+    if (fadeIn || onLoadCallBack) {
+        img.onload = function() {
+            if (fadeIn) { 
+                img.style.webkitTransition   = 'all ' + fadeInDuration + 's';
+                img.style.mozTransition      = 'all ' + fadeInDuration + 's';
+                img.style.msTransition       = 'all ' + fadeInDuration + 's';
+                img.style.oTransition        = 'all ' + fadeInDuration + 's';
+                img.style.opacity            = 1;
+             };
+            if (onLoadCallBack) { onLoadCallBack(); };
+        }
+    }
+    img.setAttribute('src', src);
+};
+
+Element.prototype.changeElementType = function(newElementType) {
+    var e = this;
+    if (this.tagName !== newElementType) {
+        var d = document.createElement(newElementType);
+        d.innerHTML = e.innerHTML;
+        e.parentNode.insertBefore(d, e);
+        e.parentNode.removeChild(e);
+    };
+};
+
+Element.prototype.getStyle = function(styleProp)
+{
+    var x = document.getElementById(el);
+    if (this.currentStyle)
+        var _style = this.currentStyle[styleProp];
+    else if (window.getComputedStyle)
+        var _style = document.defaultView.getComputedStyle(this,null).getPropertyValue(styleProp);
+    return _style;
+}
+
+Element.prototype.setChildOf = function( newParent ) {
+    newParent.appendChild(this);
+};
+
+Object.defineProperty(Element.prototype, 'height', {
+    set: function(value) { this.style.height = value + 'px'; },
+    get: function() {
+        // TODO: Compare with clientHeight / offsetHeight
+        if (!this.parentNode) { var temporary = true; document.body.appendChild(this); }
+        var bounds = this.getBoundingClientRect();
+        var height = (bounds.height|0);
+        if (temporary) { document.body.removeChild(this); }
+        return height;
+    },
+});
+
+Object.defineProperty(Element.prototype, 'opacity', {
+    get: function() { return this.getStyle('opacity'); },
+    set: function(value) { this.style.opacity = value; }
+});
+
+Object.defineProperty(Element.prototype, 'bgColor', {
+    get: function() { this.checkPA(); return this.getStyle('background-color'); },
+    set: function(value) { this.style.backgroundColor = value; },
+});
+
+
+
+//////   ######  ##     ## ########  ######## ########     ########   #######  ##      ## ######## ########   ######  
+//////  ##    ## ##     ## ##     ## ##       ##     ##    ##     ## ##     ## ##  ##  ## ##       ##     ## ##    ## 
+//////  ##       ##     ## ##     ## ##       ##     ##    ##     ## ##     ## ##  ##  ## ##       ##     ## ##       
+//////   ######  ##     ## ########  ######   ########     ########  ##     ## ##  ##  ## ######   ########   ######  
+//////        ## ##     ## ##        ##       ##   ##      ##        ##     ## ##  ##  ## ##       ##   ##         ## 
+//////  ##    ## ##     ## ##        ##       ##    ##     ##        ##     ## ##  ##  ## ##       ##    ##  ##    ## 
+//////   ######   #######  ##        ######## ##     ##    ##         #######   ###  ###  ######## ##     ##  ######  
+
+
+
 Element.prototype.activateSuperPowers = function() {
     this.transform = {
         translate: {
@@ -60,8 +165,13 @@ Element.prototype.activateSuperPowers = function() {
         animated: false,
         animation_duration: 0.5,
     };
-
+    this.powersActivated = true;
     this.updateElementTransform();  
+};
+
+// check 
+Element.prototype.checkPA = function() {
+    if (!this.powersActivated) { this.updateElementTransform(); };
 };
 
 Element.prototype.updateElementTransform = function()
@@ -92,61 +202,50 @@ Element.prototype.updateElementAnimation = function()
     }; 
 }
 
-Element.prototype.setChildOf = function( parent ) {
-    parent.appendChild(this);
-};
 
 Object.defineProperty(Element.prototype, 'animated', {
-    get: function() { return this.transform.animated; },
+    get: function() { this.checkPA(); return this.transform.animated; },
     set: function(value) {  this.transform.animated = value; this.updateElementAnimation(); },
 });
 
 Object.defineProperty(Element.prototype, 'animation_duration', {
-    get: function() { return this.transform.animation_duration; },
+    get: function() { this.checkPA(); return this.transform.animation_duration; },
     set: function(value) {  this.transform.animation_duration = value; this.updateElementAnimation(); },
 });
 
-Object.defineProperty(Element.prototype, 'bgColor', {
-    get: function() { return this.style.backgroundColor; },
-    set: function(value) { this.style.backgroundColor = value; },
-});
-
 Object.defineProperty(Element.prototype, 'x', {
-    get: function() { return this.transform.translate.x },
+    get: function() { this.checkPA(); return this.transform.translate.x },
     set: function(value) { this.transform.translate.x = value; this.updateElementTransform(); },
 });
 
 Object.defineProperty(Element.prototype, 'y', {
-    get: function() { return this.transform.translate.y; },
+    get: function() { this.checkPA(); return this.transform.translate.y; },
     set: function(value) { this.transform.translate.y = value; this.updateElementTransform(); },
 });
 
 Object.defineProperty(Element.prototype, 'z', {
-    get: function() { return this.transform.translate.z },
+    get: function() { this.checkPA(); return this.transform.translate.z },
     set: function(value) { this.transform.translate.z = value; this.updateElementTransform(); },
 });
 
 Object.defineProperty(Element.prototype, 'scale', {
-    get: function() { return this.transform.scale },
+    get: function() { this.checkPA(); return this.transform.scale },
     set: function(value) { this.transform.scale = value; this.updateElementTransform(); },
 });
 
 Object.defineProperty(Element.prototype, 'rotation', {
-    get: function() { return this.transform.rotation },
+    get: function() { this.checkPA(); return this.transform.rotation },
     set: function(value) { this.transform.rotation = value; this.updateElementTransform(); },
 });
 
 Object.defineProperty(Element.prototype, 'width', {
-    get: function() { return this.clientWidth },
     set: function(value) { this.style.width = value + 'px'; }
-});
-
-Object.defineProperty(Element.prototype, 'height', {
-    get: function() { return this.clientHeight },
-    set: function(value) { this.style.height = value + 'px'; }
-});
-
-Object.defineProperty(Element.prototype, 'opacity', {
-    get: function() { return this.style.opacity; },
-    set: function(value) { this.style.opacity = value; }
+    get: function() {
+        // TODO: Compare with clientWidth / offsetWidth
+        if (!this.parentNode) { var temporary = true; document.body.appendChild(this); }
+        var bounds = this.getBoundingClientRect();
+        var width  = (bounds.width|0);
+        if (temporary) { document.body.removeChild(this); }
+        return width;
+    },
 });
