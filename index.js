@@ -130,7 +130,7 @@ Element.prototype.loadImageInside = function (src, onLoadCallBack, fadeIn, fadeI
                 img.style.oTransition        = 'all ' + fadeInDuration + 's';
                 img.style.opacity            = 1;
              };
-            if (onLoadCallBack) { onLoadCallBack(); };
+            if (onLoadCallBack) { onLoadCallBack(img); };
         }
     }
     img.setAttribute('src', src)
@@ -150,7 +150,7 @@ Element.prototype.loadImage = function(src, onLoadCallBack, fadeIn, fadeInDurati
                 img.style.oTransition        = 'all ' + fadeInDuration + 's';
                 img.style.opacity            = 1;
              };
-            if (onLoadCallBack) { onLoadCallBack(); };
+            if (onLoadCallBack) { onLoadCallBack(img); };
         }
     }
     img.setAttribute('src', src);
