@@ -52,6 +52,7 @@ Element.prototype.onTap = function( tapCallBack, tolerance, disableClickFallBack
     var self = this;
 
     if ('ontouchstart' in window) {
+        alert('onTap ontouchstart')
         var start_x,
         start_y,
         diff_x,
@@ -83,7 +84,7 @@ Element.prototype.onTap = function( tapCallBack, tolerance, disableClickFallBack
         this.addEventListener('touchmove',  this._ontouchMove,     false);
         this.addEventListener('touchend',   this._ontouchEnd,      false);
     }
-    else if (disableClickFallBack) {
+    else if (!disableClickFallBack) {
         this.addEventListener('click', this.tapCallBack, false);
     }
 };
@@ -150,7 +151,7 @@ Element.prototype.loadImage = function(src, onLoadCallBack, fadeIn, fadeInDurati
                 img.style.oTransition        = 'all ' + fadeInDuration + 's';
                 img.style.opacity            = 1;
              };
-            if (onLoadCallBack) { onLoadCallBack(img); };
+            if (onLoadCallBack) { onLoadCallBack(); };
         }
     }
     img.setAttribute('src', src);
