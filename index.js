@@ -32,6 +32,69 @@ Element.prototype.toggleClass = function (className) {
     }
 };
 
+Element.prototype.setChildOf = function( newParent ) {
+    newParent.appendChild(this);
+};
+
+Element.prototype.onTap = function( tapCallBack, tolerance, disableClickFallBack )
+{   
+    if (!tolerance) { tolerance = 10 };
+
+    this.tapCallBack = tapCallBack;
+
+    var self = this;
+
+    if ('ontouchstart' in window) {
+        var start_x,
+        start_y,
+        diff_x,
+        diff_y,
+        current_x,
+        current_y;
+        this._ontouchStart = function(e) {
+            diff_x  = 0;
+            diff_y  = 0;
+            start_x = e.targetTouches[0].clientX;
+            start_y = e.targetTouches[0].clientY;
+        }
+        this._ontouchMove = function(e) {
+            current_x   = e.targetTouches[0].clientX;
+            current_y   = e.targetTouches[0].clientY;
+            diff_x      = -(start_x - current_x);
+            diff_y      = -(start_y - current_y);
+        }
+        this._ontouchEnd = function(e) {
+            var half_tolerance = (tolerance/2);
+            var moved_x_axis   = (diff_x > -half_tolerance && diff_x < half_tolerance);
+            var moved_y_axis   = (diff_y > -half_tolerance && diff_y < half_tolerance);
+            if (moved_x_axis || moved_y_axis) {
+                self.tapCallBack();
+            }
+        }
+
+        this.addEventListener('touchstart', this._ontouchStart,    false);
+        this.addEventListener('touchmove',  this._ontouchMove,     false);
+        this.addEventListener('touchend',   this._ontouchEnd,      false);
+    }
+    else if (disableClickFallBack) {
+        this.addEventListener('click', this.tapCallBack, false);
+    }
+};
+
+Element.prototype.removeOnTap = function( )
+{   
+    if ('ontouchstart' in window) {
+        this.removeEventListener('touchstart', this._ontouchStart,    false);
+        this.removeEventListener('touchmove',  this._ontouchMove,     false);
+        this.removeEventListener('touchend',   this._ontouchEnd,      false);
+        this.tapCallBack = null;
+    }
+    else if (disableClickFallBack) {
+        this.removeEventListener('click', this.tapCallBack, false);
+        this.tapCallBack = null;
+    }
+};
+
 Element.prototype.preloadImagesAndCallBack = function (callBack) {
     var num_imgs = this.childNodes.length;
     var count = 0;
@@ -68,21 +131,12 @@ Element.prototype.loadImageInside = function (src, onLoadCallBack, fadeIn, fadeI
 };
 
 Element.prototype.loadImage = function(src, onLoadCallBack, fadeIn, fadeInDuration) {
-    var e = this;
-    if (this.tagName !== 'IMG') {
-        if (!this.parentNode) {
-            return console.error('Element.prototype.loadImage ::: element tagName is not IMG, needs parent for conversion.')
-        }
-        var d = document.createElement('IMG');
-        e.parentNode.insertBefore(d, e);
-        e.parentNode.removeChild(e);
-        var e = d;
-    };
-    var img = e;
+    var img = this;
     if (fadeIn) { img.style.opacity = 0; };
     if (fadeIn || onLoadCallBack) {
         img.onload = function() {
             if (fadeIn) { 
+                if (!fadeInDuration) { fadeInDuration = 0.5; };
                 img.style.webkitTransition   = 'all ' + fadeInDuration + 's';
                 img.style.mozTransition      = 'all ' + fadeInDuration + 's';
                 img.style.msTransition       = 'all ' + fadeInDuration + 's';
@@ -115,9 +169,17 @@ Element.prototype.getStyle = function(styleProp)
     return _style;
 }
 
-Element.prototype.setChildOf = function( newParent ) {
-    newParent.appendChild(this);
-};
+Object.defineProperty(Element.prototype, 'width', {
+    set: function(value) { this.style.width = value + 'px'; }
+    get: function() {
+        // TODO: Compare with clientWidth / offsetWidth
+        if (!this.parentNode) { var temporary = true; document.body.appendChild(this); }
+        var bounds = this.getBoundingClientRect();
+        var width  = (bounds.width|0);
+        if (temporary) { document.body.removeChild(this); }
+        return width;
+    },
+});
 
 Object.defineProperty(Element.prototype, 'height', {
     set: function(value) { this.style.height = value + 'px'; },
@@ -169,9 +231,11 @@ Element.prototype.activateSuperPowers = function() {
     this.updateElementTransform();  
 };
 
-// check 
 Element.prototype.checkPA = function() {
-    if (!this.powersActivated) { this.updateElementTransform(); };
+    if (!this.powersActivated) { 
+        this.activateSuperPowers(); 
+        this.updateElementTransform();
+    };
 };
 
 Element.prototype.updateElementTransform = function()
@@ -236,16 +300,4 @@ Object.defineProperty(Element.prototype, 'scale', {
 Object.defineProperty(Element.prototype, 'rotation', {
     get: function() { this.checkPA(); return this.transform.rotation },
     set: function(value) { this.transform.rotation = value; this.updateElementTransform(); },
-});
-
-Object.defineProperty(Element.prototype, 'width', {
-    set: function(value) { this.style.width = value + 'px'; }
-    get: function() {
-        // TODO: Compare with clientWidth / offsetWidth
-        if (!this.parentNode) { var temporary = true; document.body.appendChild(this); }
-        var bounds = this.getBoundingClientRect();
-        var width  = (bounds.width|0);
-        if (temporary) { document.body.removeChild(this); }
-        return width;
-    },
 });
