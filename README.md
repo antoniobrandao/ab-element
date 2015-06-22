@@ -38,21 +38,20 @@ $ npm install ab-element --save-dev
 	
 	require('ab-element');
 
-	var test = document.createElement('DIV');
-	test.setChildOf(document.body);
+	var test = addChildToBody('DIV');
 	test.activateSuperPowers();
 	test.animated = true;
-	test.x = 100;
-	test.y = 100;
-	test.width = 200;
-	test.height = 200;
+	test.x = 50;
+	test.y = 50;
+	test.width = 50;
+	test.height = 50;
+	test.bgColor = 'red';
 	test.hasClass('some-class');
 	test.addClass('some-class');
 	test.removeClass('some-class');
 	test.toggleClass('some-class');
-	test.bgColor = '#333';
-	test.scale = 3;
 	test.rotation = 45;
+	test.scale = 3;
 	test.changeElementType('IMG');
 	test.loadImage('http://lorempixel.com/400/200/', function(){ console.log('image loaded')}, true );
 	test.onTap(function(){ test.rotation = Math.random() * 360; });

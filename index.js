@@ -36,6 +36,13 @@ Element.prototype.setChildOf = function( newParent ) {
     newParent.appendChild(this);
 };
 
+window.addChildToBody = function(tagName)
+{
+    var newElement = document.createElement('DIV');
+    document.body.appendChild(newElement);
+    return newElement;
+}
+
 Element.prototype.onTap = function( tapCallBack, tolerance, disableClickFallBack )
 {   
     if (!tolerance) { tolerance = 10 };
@@ -161,7 +168,6 @@ Element.prototype.changeElementType = function(newElementType) {
 
 Element.prototype.getStyle = function(styleProp)
 {
-    var x = document.getElementById(el);
     if (this.currentStyle)
         var _style = this.currentStyle[styleProp];
     else if (window.getComputedStyle)
@@ -170,14 +176,15 @@ Element.prototype.getStyle = function(styleProp)
 }
 
 Object.defineProperty(Element.prototype, 'width', {
-    set: function(value) { this.style.width = value + 'px'; }
+    set: function(value) { this.style.width = value + 'px'; },
     get: function() {
+        return this.clientWidth;
         // TODO: Compare with clientWidth / offsetWidth
-        if (!this.parentNode) { var temporary = true; document.body.appendChild(this); }
-        var bounds = this.getBoundingClientRect();
-        var width  = (bounds.width|0);
-        if (temporary) { document.body.removeChild(this); }
-        return width;
+        // if (!this.parentNode) { var temporary = true; document.body.appendChild(this); }
+        // var bounds = this.getBoundingClientRect();
+        // var width  = (bounds.width|0);
+        // if (temporary) { document.body.removeChild(this); }
+        // return width;
     },
 });
 
@@ -185,11 +192,12 @@ Object.defineProperty(Element.prototype, 'height', {
     set: function(value) { this.style.height = value + 'px'; },
     get: function() {
         // TODO: Compare with clientHeight / offsetHeight
-        if (!this.parentNode) { var temporary = true; document.body.appendChild(this); }
-        var bounds = this.getBoundingClientRect();
-        var height = (bounds.height|0);
-        if (temporary) { document.body.removeChild(this); }
-        return height;
+        return this.clientHeight;
+        // if (!this.parentNode) { var temporary = true; document.body.appendChild(this); }
+        // var bounds = this.getBoundingClientRect();
+        // var height = (bounds.height|0);
+        // if (temporary) { document.body.removeChild(this); }
+        // return height;
     },
 });
 
