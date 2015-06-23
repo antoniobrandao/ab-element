@@ -43,7 +43,7 @@ window.addChildToBody = function(tagName)
     return newElement;
 }
 
-Element.prototype.onTap = function( tapCallBack, tolerance, disableClickFallBack )
+Element.prototype.onTap = function( tapCallBack, tolerance, disableClickFallBack, preventDefault, stopPropagation )
 {   
     if (!tolerance) { tolerance = 10 };
 
@@ -52,7 +52,6 @@ Element.prototype.onTap = function( tapCallBack, tolerance, disableClickFallBack
     var self = this;
 
     if ('ontouchstart' in window) {
-        alert('onTap ontouchstart')
         var start_x,
         start_y,
         diff_x,
@@ -60,18 +59,24 @@ Element.prototype.onTap = function( tapCallBack, tolerance, disableClickFallBack
         current_x,
         current_y;
         this._ontouchStart = function(e) {
+            if (preventDefault)  { e.preventDefault(); };
+            if (stopPropagation) { e.stopPropagation(); };
             diff_x  = 0;
             diff_y  = 0;
             start_x = e.targetTouches[0].clientX;
             start_y = e.targetTouches[0].clientY;
         }
         this._ontouchMove = function(e) {
+            if (preventDefault)  { e.preventDefault(); };
+            if (stopPropagation) { e.stopPropagation(); };
             current_x   = e.targetTouches[0].clientX;
             current_y   = e.targetTouches[0].clientY;
             diff_x      = -(start_x - current_x);
             diff_y      = -(start_y - current_y);
         }
         this._ontouchEnd = function(e) {
+            if (preventDefault)  { e.preventDefault(); };
+            if (stopPropagation) { e.stopPropagation(); };
             var half_tolerance = (tolerance/2);
             var moved_x_axis   = (diff_x > -half_tolerance && diff_x < half_tolerance);
             var moved_y_axis   = (diff_y > -half_tolerance && diff_y < half_tolerance);
@@ -84,8 +89,13 @@ Element.prototype.onTap = function( tapCallBack, tolerance, disableClickFallBack
         this.addEventListener('touchmove',  this._ontouchMove,     false);
         this.addEventListener('touchend',   this._ontouchEnd,      false);
     }
-    else if (!disableClickFallBack) {
-        this.addEventListener('click', this.tapCallBack, false);
+    else if (disableClickFallBack) {
+        this.addEventListener('click', function(e)
+        {
+            if (preventDefault)  { e.preventDefault(); };
+            if (stopPropagation) { e.stopPropagation(); };
+            this.tapCallBack();
+        }, false);
     }
 };
 
@@ -131,11 +141,27 @@ Element.prototype.loadImageInside = function (src, onLoadCallBack, fadeIn, fadeI
                 img.style.oTransition        = 'all ' + fadeInDuration + 's';
                 img.style.opacity            = 1;
              };
-            if (onLoadCallBack) { onLoadCallBack(img); };
+            if (onLoadCallBack) { onLoadCallBack(); };
         }
     }
     img.setAttribute('src', src)
     this.appendChild(img);
+};
+
+Element.prototype.activateCSSTransitions = function (property, transitionDuration) {
+    if (property) { property = 'all'; };
+    if (transitionDuration) { transitionDuration = 0.5; };
+    this.style.webkitTransition   = 'all ' + transitionDuration + 's';
+    this.style.mozTransition      = 'all ' + transitionDuration + 's';
+    this.style.msTransition       = 'all ' + transitionDuration + 's';
+    this.style.oTransition        = 'all ' + transitionDuration + 's';
+};
+
+Element.prototype.deactivateCSSTransitions = function () {
+    this.style.webkitTransition   = 'none';
+    this.style.mozTransition      = 'none';
+    this.style.msTransition       = 'none';
+    this.style.oTransition        = 'none';
 };
 
 Element.prototype.loadImage = function(src, onLoadCallBack, fadeIn, fadeInDuration) {
@@ -214,13 +240,13 @@ Object.defineProperty(Element.prototype, 'bgColor', {
 
 
 
-//////   ######  ##     ## ########  ######## ########     ########   #######  ##      ## ######## ########   ######  
-//////  ##    ## ##     ## ##     ## ##       ##     ##    ##     ## ##     ## ##  ##  ## ##       ##     ## ##    ## 
-//////  ##       ##     ## ##     ## ##       ##     ##    ##     ## ##     ## ##  ##  ## ##       ##     ## ##       
-//////   ######  ##     ## ########  ######   ########     ########  ##     ## ##  ##  ## ######   ########   ######  
-//////        ## ##     ## ##        ##       ##   ##      ##        ##     ## ##  ##  ## ##       ##   ##         ## 
-//////  ##    ## ##     ## ##        ##       ##    ##     ##        ##     ## ##  ##  ## ##       ##    ##  ##    ## 
-//////   ######   #######  ##        ######## ##     ##    ##         #######   ###  ###  ######## ##     ##  ######  
+// //////   ######  ##     ## ########  ######## ########     ########   #######  ##      ## ######## ########   ######  
+// //////  ##    ## ##     ## ##     ## ##       ##     ##    ##     ## ##     ## ##  ##  ## ##       ##     ## ##    ## 
+// //////  ##       ##     ## ##     ## ##       ##     ##    ##     ## ##     ## ##  ##  ## ##       ##     ## ##       
+// //////   ######  ##     ## ########  ######   ########     ########  ##     ## ##  ##  ## ######   ########   ######  
+// //////        ## ##     ## ##        ##       ##   ##      ##        ##     ## ##  ##  ## ##       ##   ##         ## 
+// //////  ##    ## ##     ## ##        ##       ##    ##     ##        ##     ## ##  ##  ## ##       ##    ##  ##    ## 
+// //////   ######   #######  ##        ######## ##     ##    ##         #######   ###  ###  ######## ##     ##  ######  
 
 
 
@@ -301,7 +327,7 @@ Object.defineProperty(Element.prototype, 'z', {
     set: function(value) { this.transform.translate.z = value; this.updateElementTransform(); },
 });
 
-Object.defineProperty(Element.prototype, 'scale', {
+Object.defineProperty(Element.prototype, 'scaleXY', {
     get: function() { this.checkPA(); return this.transform.scale },
     set: function(value) { this.transform.scale = value; this.updateElementTransform(); },
 });

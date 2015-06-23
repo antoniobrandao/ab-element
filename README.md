@@ -15,6 +15,8 @@ DOM Element prototype addons.
 - Element.prototype.changeElementType // creates a new element of desired tagName, replaces it with current element and move in HTML contents
 - Element.prototype.getStyle // cross-browser helper to get style values
 - Element.prototype.onTap // sets up a touch "tap" handler, with distance tolerance (in px) and a click fallback in non-touch devices
+- Element.prototype.activateCSSTransitions // sets up CSS transitions, accepts property value (can be 'all') and transition duration. Major vendor prefixes included
+- Element.prototype.deactivateCSSTransitions // removes CSS transitions
 
 - - properties
 - x
