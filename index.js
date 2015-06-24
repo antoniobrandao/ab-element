@@ -113,41 +113,6 @@ Element.prototype.removeOnTap = function( )
     }
 };
 
-Element.prototype.preloadImagesAndCallBack = function (callBack) {
-    var num_imgs = this.childNodes.length;
-    var count = 0;
-    var loop = function() {
-        count = count + 1;
-        if (count === num_imgs) {
-            callBack(); 
-        }
-    }
-    for (var i = 0; i <= num_imgs - 1; i++) {
-        if (this.childNodes[i].tagName === 'IMG') {
-            this.childNodes[i].onload = loop;
-        }
-    }
-};
-
-Element.prototype.loadImageInside = function (src, onLoadCallBack, fadeIn, fadeInDuration) {
-    var img = document.createElement('IMG');
-    if (fadeIn) { img.style.opacity = 0; };
-    if (fadeIn || onLoadCallBack) {
-        img.onload = function() {
-            if (fadeIn) { 
-                img.style.webkitTransition   = 'all ' + fadeInDuration + 's';
-                img.style.mozTransition      = 'all ' + fadeInDuration + 's';
-                img.style.msTransition       = 'all ' + fadeInDuration + 's';
-                img.style.oTransition        = 'all ' + fadeInDuration + 's';
-                img.style.opacity            = 1;
-             };
-            if (onLoadCallBack) { onLoadCallBack(); };
-        }
-    }
-    img.setAttribute('src', src)
-    this.appendChild(img);
-};
-
 Element.prototype.activateCSSTransitions = function (property, transitionDuration) {
     if (property) { property = 'all'; };
     if (transitionDuration) { transitionDuration = 0.5; };
@@ -162,6 +127,22 @@ Element.prototype.deactivateCSSTransitions = function () {
     this.style.mozTransition      = 'none';
     this.style.msTransition       = 'none';
     this.style.oTransition        = 'none';
+};
+
+Element.prototype.preloadImagesAndCallBack = function (callBack) {
+    var num_imgs = this.childNodes.length;
+    var count = 0;
+    var loop = function() {
+        count = count + 1;
+        if (count === num_imgs) {
+            callBack(); 
+        }
+    }
+    for (var i = 0; i <= num_imgs - 1; i++) {
+        if (this.childNodes[i].tagName === 'IMG') {
+            this.childNodes[i].onload = loop;
+        }
+    }
 };
 
 Element.prototype.loadImage = function(src, onLoadCallBack, fadeIn, fadeInDuration) {
@@ -181,6 +162,25 @@ Element.prototype.loadImage = function(src, onLoadCallBack, fadeIn, fadeInDurati
         }
     }
     img.setAttribute('src', src);
+};
+
+Element.prototype.loadImageInside = function (src, onLoadCallBack, fadeIn, fadeInDuration) {
+    var img = document.createElement('IMG');
+    if (fadeIn) { img.style.opacity = 0; };
+    if (fadeIn || onLoadCallBack) {
+        img.onload = function() {
+            if (fadeIn) { 
+                img.style.webkitTransition   = 'all ' + fadeInDuration + 's';
+                img.style.mozTransition      = 'all ' + fadeInDuration + 's';
+                img.style.msTransition       = 'all ' + fadeInDuration + 's';
+                img.style.oTransition        = 'all ' + fadeInDuration + 's';
+                img.style.opacity            = 1;
+             };
+            if (onLoadCallBack) { onLoadCallBack(); };
+        }
+    }
+    img.setAttribute('src', src)
+    this.appendChild(img);
 };
 
 Element.prototype.changeElementType = function(newElementType) {

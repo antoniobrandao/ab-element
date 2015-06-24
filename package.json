@@ -1,6 +1,6 @@
 {
   "name": "ab-element",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "AB Element - DOM Element with super powers.",
   "main": "index.js",
   "keywords": [
