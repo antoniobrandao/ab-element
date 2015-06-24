@@ -114,8 +114,8 @@ Element.prototype.removeOnTap = function( )
 };
 
 Element.prototype.activateCSSTransitions = function (property, transitionDuration) {
-    if (property) { property = 'all'; };
-    if (transitionDuration) { transitionDuration = 0.5; };
+    if (!property) { property = 'all'; };
+    if (!transitionDuration) { transitionDuration = 0.5; };
     this.style.webkitTransition   = 'all ' + transitionDuration + 's';
     this.style.mozTransition      = 'all ' + transitionDuration + 's';
     this.style.msTransition       = 'all ' + transitionDuration + 's';
