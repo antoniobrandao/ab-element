@@ -81,7 +81,7 @@ Element.prototype.onTap = function( tapCallBack, tolerance, disableClickFallBack
             var moved_x_axis   = (diff_x > -half_tolerance && diff_x < half_tolerance);
             var moved_y_axis   = (diff_y > -half_tolerance && diff_y < half_tolerance);
             if (moved_x_axis || moved_y_axis) {
-                self.tapCallBack();
+                self.tapCallBack(e);
             }
         }
 
@@ -94,7 +94,7 @@ Element.prototype.onTap = function( tapCallBack, tolerance, disableClickFallBack
         {
             if (preventDefault)  { e.preventDefault(); };
             if (stopPropagation) { e.stopPropagation(); };
-            this.tapCallBack();
+            this.tapCallBack(e);
         }, false);
     }
 };
