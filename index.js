@@ -32,6 +32,46 @@ Element.prototype.toggleClass = function (className) {
     }
 };
 
+SVGElement.prototype.hasClass = function (className) {
+    return new RegExp('(\\s|^)' + className + '(\\s|$)').test(this.getAttribute('class'));
+};
+
+SVGElement.prototype.addClass = function (className) {
+    if (!this.hasClass(className)) {
+        this.setAttribute('class', this.getAttribute('class') + ' ' + className);
+    }
+};
+
+SVGElement.prototype.removeClass = function (className) {
+    var removedClass = this.getAttribute('class').replace(new RegExp('(\\s|^)' + className + '(\\s|$)', 'g'), '$2');
+    if (this.hasClass(className)) {
+        this.setAttribute('class', removedClass);
+    }
+};
+
+SVGElement.prototype.toggleClass = function (className) {
+    if (this.hasClass(className)) {
+        this.removeClass(className);
+    } else {
+        this.addClass(className);
+    }
+};
+
+Element.prototype.toggleVisibility = function () {
+    var visibility = this.getStyle('visibility');
+    console.log('visibility:');
+    console.dir(visibility);
+
+    if (visibility === 'visible') {
+        console.log('111');
+        this.style.visibility = 'hidden';
+    }
+    else {
+        console.log('222');
+        this.style.visibility = 'visible';
+    }
+};
+
 Element.prototype.setChildOf = function( newParent ) {
     newParent.appendChild(this);
 };
@@ -44,12 +84,15 @@ window.addChildToBody = function(tagName)
 }
 
 Element.prototype.onTap = function( tapCallBack, tolerance, disableClickFallBack, preventDefault, stopPropagation )
-{   
+{
+    console.log('onTap');
+
     if (!tolerance) { tolerance = 10 };
 
     this.tapCallBack = tapCallBack;
 
     var self = this;
+    this.addedListeners = false;
 
     if ('ontouchstart' in window) {
         var start_x,
@@ -58,15 +101,21 @@ Element.prototype.onTap = function( tapCallBack, tolerance, disableClickFallBack
         diff_y,
         current_x,
         current_y;
-        this._ontouchStart = function(e) {
-            if (preventDefault)  { e.preventDefault(); };
-            if (stopPropagation) { e.stopPropagation(); };
-            diff_x  = 0;
-            diff_y  = 0;
-            start_x = e.targetTouches[0].clientX;
-            start_y = e.targetTouches[0].clientY;
+        this.touch_running = false;
+        
+        var _ontouchStart = function(e)
+        {
+            if (!self.touch_running) {
+                self.touch_running = true;
+                if (preventDefault)  { e.preventDefault(); };
+                if (stopPropagation) { e.stopPropagation(); };
+                diff_x  = 0;
+                diff_y  = 0;
+                start_x = e.targetTouches[0].clientX;
+                start_y = e.targetTouches[0].clientY;
+            };
         }
-        this._ontouchMove = function(e) {
+        var _ontouchMove = function(e) {
             if (preventDefault)  { e.preventDefault(); };
             if (stopPropagation) { e.stopPropagation(); };
             current_x   = e.targetTouches[0].clientX;
@@ -74,29 +123,145 @@ Element.prototype.onTap = function( tapCallBack, tolerance, disableClickFallBack
             diff_x      = -(start_x - current_x);
             diff_y      = -(start_y - current_y);
         }
-        this._ontouchEnd = function(e) {
-            if (preventDefault)  { e.preventDefault(); };
+        var _ontouchEnd = function(e) {
             if (stopPropagation) { e.stopPropagation(); };
             var half_tolerance = (tolerance/2);
             var moved_x_axis   = (diff_x > -half_tolerance && diff_x < half_tolerance);
             var moved_y_axis   = (diff_y > -half_tolerance && diff_y < half_tolerance);
-            if (moved_x_axis || moved_y_axis) {
+
+            if (moved_x_axis && moved_y_axis) {
                 self.tapCallBack(e);
             }
+            self.touch_running = false;
         }
 
-        this.addEventListener('touchstart', this._ontouchStart,    false);
-        this.addEventListener('touchmove',  this._ontouchMove,     false);
-        this.addEventListener('touchend',   this._ontouchEnd,      false);
+        this.addEventListener('touchstart', _ontouchStart,    false);
+        this.addEventListener('touchmove',  _ontouchMove,     false);
+        this.addEventListener('touchend',   _ontouchEnd,      false);
+
     }
     else if (disableClickFallBack) {
-        this.addEventListener('click', function(e)
-        {
+        this.addEventListener('click', function(e) {
             if (preventDefault)  { e.preventDefault(); };
             if (stopPropagation) { e.stopPropagation(); };
             this.tapCallBack(e);
         }, false);
     }
+};
+
+Element.prototype.updateDragStartCoordinates = function updateDragStartCoordinates(coordinates) 
+{
+    this.current_position_x = coordinates.x;
+    this.current_position_y = coordinates.y;
+}
+
+Element.prototype.setupDragging = function setupDragging(options) 
+{
+    this.drag_activated = true;
+
+    if (!options) 
+    {
+        options = {
+            init_x: 0,
+            init_y: 0
+        }
+    }
+    else
+    {
+        if (!options.init_x ) { options.init_x = 0; };
+        if (!options.init_y ) { options.init_y = 0; };
+    }
+
+    var element = this;
+
+    // var t3d = this.getStyle('transform');
+    // var getStringBetweenParentheses = /\(([^)]+)\)/;
+    // var matches = getStringBetweenParentheses.exec(String(t3d))[1];
+    // matches = matches.split(',');
+    // matches = [parseInt(matches[matches.length-2]), parseInt(matches[matches.length-1])];
+    // console.log('matches:');
+    // console.dir(matches);
+
+    var start_position_x;
+    var diff_position_x;
+    var start_value_x       = options.init_x;
+    this.current_position_x = options.init_x;
+    var start_position_y;
+    var diff_position_y;
+    var start_value_y       = options.init_y;
+    this.current_position_y = options.init_y;
+
+    var processTick = function()
+    {
+        element.style.transform = 'translate3d(' + self.current_position_x + 'px, ' + self.current_position_y + 'px, 0px)';
+        element.style.webkitTransform = 'translate3d(' + self.current_position_x + 'px, ' + self.current_position_y + 'px, 0px)';
+    }
+
+    var touchStart = function(e)
+    {
+        // console.log('touchStart');
+        // if (self.settings.preventDefault) { e.preventDefault(); };
+        // if (self.settings.stopPropagation) { e.stopPropagation(); };
+        
+        diff_position_x  = 0;
+        diff_position_y  = 0;
+        start_position_x = e.targetTouches[0].clientX;
+        start_position_y = e.targetTouches[0].clientY;
+        self.dragTickInterval = setInterval(processTick, 100);
+    }
+    var touchMove = function(e)
+    {
+        // console.log('touchMove');
+        // if (self.settings.preventDefault) { e.preventDefault(); };
+        // if (self.settings.stopPropagation) { e.stopPropagation(); };
+        
+        self.current_position_x = e.targetTouches[0].clientX;
+        self.current_position_y = e.targetTouches[0].clientY;
+        diff_position_x = -(start_position_x - self.current_position_x);
+        diff_position_y = -(start_position_y - self.current_position_y);
+
+        // if (self.invert_direction) {
+        //     diff_position_x = diff_position_x * -1;
+        // };
+        var new_x = start_value_x + diff_position_x;
+        var new_y = start_value_y + diff_position_y;
+
+        // if (new_y > self.settings.drag_distance_limit) {
+        //     new_y = self.settings.drag_distance_limit
+        // };
+        // if (new_y < -scroll_height_diff-self.settings.drag_distance_limit) {
+        //     new_y = -scroll_height_diff-self.settings.drag_distance_limit
+        // };
+
+        self.current_position_x = new_x;
+        self.current_position_y = new_y;
+    }
+    var touchEnd = function(e)
+    {
+        // console.log('touchEnd');
+        // if (self.settings.preventDefault) { e.preventDefault(); };
+        // if (self.settings.stopPropagation) { e.stopPropagation(); };
+        
+        // if (diff_position_x > -5 && diff_position_x < 5) { /* equivalent to tap */ };
+
+        // limit drag
+        // if (self.current_position_x > 0) {
+        //     self.current_position_x = 0
+        // };
+        // if (self.current_position_x < -scroll_height_diff) {
+        //     self.current_position_x = -scroll_height_diff
+        // };
+
+        processTick();
+
+        clearInterval(self.dragTickInterval);
+        start_value_x = self.current_position_x;
+        start_value_y = self.current_position_y;
+    }
+
+    element.addEventListener('touchstart', touchStart,    false);
+    element.addEventListener('touchmove',  touchMove,     false);
+    element.addEventListener('touchend',   touchEnd,      false);
 };
 
 Element.prototype.removeOnTap = function( )
@@ -113,13 +278,16 @@ Element.prototype.removeOnTap = function( )
     }
 };
 
-Element.prototype.activateCSSTransitions = function (property, transitionDuration) {
-    if (!property) { property = 'all'; };
-    if (!transitionDuration) { transitionDuration = 0.5; };
-    this.style.webkitTransition   = 'all ' + transitionDuration + 's';
-    this.style.mozTransition      = 'all ' + transitionDuration + 's';
-    this.style.msTransition       = 'all ' + transitionDuration + 's';
-    this.style.oTransition        = 'all ' + transitionDuration + 's';
+Element.prototype.activateCSSTransitions = function (property, transitionDuration, transitionCurve, transitionDelay) {
+    if (!property)              { property = 'all'; };
+    if (!transitionDuration)    { transitionDuration = 0.5; };
+    if (!transitionCurve)       { transitionCurve = 'ease-out'; };
+    if (!transitionDelay)       { transitionDelay = 0; };
+    var new_transition_value = 'all ' + transitionDuration + 's ' + transitionCurve + ' ' + transitionDelay + 's';
+    this.style.webkitTransition   = new_transition_value;
+    this.style.mozTransition      = new_transition_value;
+    this.style.msTransition       = new_transition_value;
+    this.style.oTransition        = new_transition_value;
 };
 
 Element.prototype.deactivateCSSTransitions = function () {
