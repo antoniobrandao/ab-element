@@ -1,16 +1,21 @@
 'use strict';
 
 Element.prototype.hasClass = function (className) {
+    if (this.debug) { console.log('Element.prototype.hasClass'); };
+
     return new RegExp(' ' + className + ' ').test(' ' + this.className + ' ');
 };
 
 Element.prototype.addClass = function (className) {
+    if (this.debug) { console.log('Element.prototype.addClass'); };
     if (!this.hasClass(className)) {
         this.className += ' ' + className;
     }
 };
 
 Element.prototype.removeClass = function (className) {
+    if (this.debug) { console.log('Element.prototype.removeClass'); };
+
     var newClass = ' ' + this.className.replace(/[\t\r\n]/g, ' ') + ' '
     if (this.hasClass(className)) {
         while (newClass.indexOf( ' ' + className + ' ') >= 0) {
@@ -21,6 +26,8 @@ Element.prototype.removeClass = function (className) {
 };
 
 Element.prototype.toggleClass = function (className) {
+    if (this.debug) { console.log('Element.prototype.toggleClass'); };
+
     var newClass = ' ' + this.className.replace(/[\t\r\n]/g, " ") + ' ';
     if (this.hasClass(className)) {
         while (newClass.indexOf(" " + className + " ") >= 0) {
@@ -33,16 +40,22 @@ Element.prototype.toggleClass = function (className) {
 };
 
 SVGElement.prototype.hasClass = function (className) {
+    if (this.debug) { console.log('Element.prototype.hasClass'); };
+
     return new RegExp('(\\s|^)' + className + '(\\s|$)').test(this.getAttribute('class'));
 };
 
 SVGElement.prototype.addClass = function (className) {
+    if (this.debug) { console.log('Element.prototype.addClass'); };
+
     if (!this.hasClass(className)) {
         this.setAttribute('class', this.getAttribute('class') + ' ' + className);
     }
 };
 
 SVGElement.prototype.removeClass = function (className) {
+    if (this.debug) { console.log('Element.prototype.removeClass'); };
+
     var removedClass = this.getAttribute('class').replace(new RegExp('(\\s|^)' + className + '(\\s|$)', 'g'), '$2');
     if (this.hasClass(className)) {
         this.setAttribute('class', removedClass);
@@ -50,6 +63,8 @@ SVGElement.prototype.removeClass = function (className) {
 };
 
 SVGElement.prototype.toggleClass = function (className) {
+    if (this.debug) { console.log('Element.prototype.toggleClass'); };
+
     if (this.hasClass(className)) {
         this.removeClass(className);
     } else {
@@ -58,9 +73,9 @@ SVGElement.prototype.toggleClass = function (className) {
 };
 
 Element.prototype.toggleVisibility = function () {
+    if (this.debug) { console.log('Element.prototype.toggleVisibility'); };
+
     var visibility = this.getStyle('visibility');
-    console.log('visibility:');
-    console.dir(visibility);
 
     if (visibility === 'visible') {
         console.log('111');
@@ -73,11 +88,15 @@ Element.prototype.toggleVisibility = function () {
 };
 
 Element.prototype.setChildOf = function( newParent ) {
+    if (this.debug) { console.log('Element.prototype.setChildOf'); };
+
     newParent.appendChild(this);
 };
 
 window.addChildToBody = function(tagName)
 {
+    if (this.debug) { console.log('Element.prototype.addChildToBody'); };
+    
     var newElement = document.createElement('DIV');
     document.body.appendChild(newElement);
     return newElement;
@@ -85,7 +104,9 @@ window.addChildToBody = function(tagName)
 
 Element.prototype.onTap = function( tapCallBack, tolerance, disableClickFallBack, preventDefault, stopPropagation )
 {
-    console.log('onTap');
+    if (this.debug) { console.log('Element.prototype.prototype'); };
+    
+    // console.log('onTap');
 
     if (!tolerance) { tolerance = 10 };
 
@@ -103,8 +124,9 @@ Element.prototype.onTap = function( tapCallBack, tolerance, disableClickFallBack
         current_y;
         this.touch_running = false;
         
-        var _ontouchStart = function(e)
-        {
+        var _ontouchStart = function(e) {
+            if (this.debug) { console.log('Element _ontouchStart'); };
+
             if (!self.touch_running) {
                 self.touch_running = true;
                 if (preventDefault)  { e.preventDefault(); };
@@ -116,6 +138,8 @@ Element.prototype.onTap = function( tapCallBack, tolerance, disableClickFallBack
             };
         }
         var _ontouchMove = function(e) {
+            if (this.debug) { console.log('Element _ontouchMove'); };
+
             if (preventDefault)  { e.preventDefault(); };
             if (stopPropagation) { e.stopPropagation(); };
             current_x   = e.targetTouches[0].clientX;
@@ -124,6 +148,8 @@ Element.prototype.onTap = function( tapCallBack, tolerance, disableClickFallBack
             diff_y      = -(start_y - current_y);
         }
         var _ontouchEnd = function(e) {
+            if (this.debug) { console.log('Element _ontouchEnd'); };
+
             if (stopPropagation) { e.stopPropagation(); };
             var half_tolerance = (tolerance/2);
             var moved_x_axis   = (diff_x > -half_tolerance && diff_x < half_tolerance);
@@ -142,6 +168,7 @@ Element.prototype.onTap = function( tapCallBack, tolerance, disableClickFallBack
     }
     else if (disableClickFallBack) {
         this.addEventListener('click', function(e) {
+            if (this.debug) { console.log('Element disableClickFallBack'); };
             if (preventDefault)  { e.preventDefault(); };
             if (stopPropagation) { e.stopPropagation(); };
             this.tapCallBack(e);
@@ -151,12 +178,16 @@ Element.prototype.onTap = function( tapCallBack, tolerance, disableClickFallBack
 
 Element.prototype.updateDragStartCoordinates = function updateDragStartCoordinates(coordinates) 
 {
+    if (this.debug) { console.log('Element.prototype.updateDragStartCoordinates'); };
+    
     this.current_position_x = coordinates.x;
     this.current_position_y = coordinates.y;
 }
 
 Element.prototype.setupDragging = function setupDragging(options) 
 {
+    if (this.debug) { console.log('Element.prototype.setupDragging'); };
+
     this.drag_activated = true;
 
     if (!options) 
@@ -193,13 +224,16 @@ Element.prototype.setupDragging = function setupDragging(options)
 
     var processTick = function()
     {
+        if (this.debug) { console.log('Element processTick'); };
+
         element.style.transform = 'translate3d(' + self.current_position_x + 'px, ' + self.current_position_y + 'px, 0px)';
         element.style.webkitTransform = 'translate3d(' + self.current_position_x + 'px, ' + self.current_position_y + 'px, 0px)';
     }
 
     var touchStart = function(e)
     {
-        // console.log('touchStart');
+        if (this.debug) { console.log('Element touchStart'); };
+
         // if (self.settings.preventDefault) { e.preventDefault(); };
         // if (self.settings.stopPropagation) { e.stopPropagation(); };
         
@@ -211,6 +245,8 @@ Element.prototype.setupDragging = function setupDragging(options)
     }
     var touchMove = function(e)
     {
+        if (this.debug) { console.log('Element touchMove'); };
+
         // console.log('touchMove');
         // if (self.settings.preventDefault) { e.preventDefault(); };
         // if (self.settings.stopPropagation) { e.stopPropagation(); };
@@ -238,6 +274,7 @@ Element.prototype.setupDragging = function setupDragging(options)
     }
     var touchEnd = function(e)
     {
+        if (this.debug) { console.log('Element touchEnd'); };
         // console.log('touchEnd');
         // if (self.settings.preventDefault) { e.preventDefault(); };
         // if (self.settings.stopPropagation) { e.stopPropagation(); };
@@ -266,6 +303,7 @@ Element.prototype.setupDragging = function setupDragging(options)
 
 Element.prototype.removeOnTap = function( )
 {   
+    if (this.debug) { console.log('Element.prototype.removeOnTap'); };
     if ('ontouchstart' in window) {
         this.removeEventListener('touchstart', this._ontouchStart,    false);
         this.removeEventListener('touchmove',  this._ontouchMove,     false);
@@ -279,6 +317,8 @@ Element.prototype.removeOnTap = function( )
 };
 
 Element.prototype.activateCSSTransitions = function (property, transitionDuration, transitionCurve, transitionDelay) {
+
+    if (this.debug) { console.log('Element.prototype.activateCSSTransitions'); };
     if (!property)              { property = 'all'; };
     if (!transitionDuration)    { transitionDuration = 0.5; };
     if (!transitionCurve)       { transitionCurve = 'ease-out'; };
@@ -291,6 +331,8 @@ Element.prototype.activateCSSTransitions = function (property, transitionDuratio
 };
 
 Element.prototype.deactivateCSSTransitions = function () {
+
+    if (this.debug) { console.log('Element.prototype.deactivateCSSTransitions'); };
     this.style.webkitTransition   = 'none';
     this.style.mozTransition      = 'none';
     this.style.msTransition       = 'none';
@@ -298,6 +340,8 @@ Element.prototype.deactivateCSSTransitions = function () {
 };
 
 Element.prototype.preloadImagesAndCallBack = function (callBack) {
+
+    if (this.debug) { console.log('Element.prototype.preloadImagesAndCallBack'); };
     var num_imgs = this.childNodes.length;
     var count = 0;
     var loop = function() {
@@ -314,6 +358,8 @@ Element.prototype.preloadImagesAndCallBack = function (callBack) {
 };
 
 Element.prototype.loadImage = function(src, onLoadCallBack, fadeIn, fadeInDuration) {
+
+    if (this.debug) { console.log('Element.prototype.loadImage'); };
     var img = this;
     if (fadeIn) { img.style.opacity = 0; };
     if (fadeIn || onLoadCallBack) {
@@ -333,6 +379,7 @@ Element.prototype.loadImage = function(src, onLoadCallBack, fadeIn, fadeInDurati
 };
 
 Element.prototype.loadImageInside = function (src, onLoadCallBack, fadeIn, fadeInDuration) {
+    if (this.debug) { console.log('Element.prototype.getStyle'); };
     var img = document.createElement('IMG');
     if (fadeIn) { img.style.opacity = 0; };
     if (fadeIn || onLoadCallBack) {
@@ -352,6 +399,7 @@ Element.prototype.loadImageInside = function (src, onLoadCallBack, fadeIn, fadeI
 };
 
 Element.prototype.changeElementType = function(newElementType) {
+    if (this.debug) { console.log('Element.prototype.getStyle'); };
     var e = this;
     if (this.tagName !== newElementType) {
         var d = document.createElement(newElementType);
@@ -363,6 +411,8 @@ Element.prototype.changeElementType = function(newElementType) {
 
 Element.prototype.getStyle = function(styleProp)
 {
+    if (this.debug) { console.log('Element.prototype.getStyle'); };
+
     if (this.currentStyle)
         var _style = this.currentStyle[styleProp];
     else if (window.getComputedStyle)
@@ -396,17 +446,6 @@ Object.defineProperty(Element.prototype, 'height', {
     },
 });
 
-Object.defineProperty(Element.prototype, 'opacity', {
-    get: function() { return this.getStyle('opacity'); },
-    set: function(value) { this.style.opacity = value; }
-});
-
-Object.defineProperty(Element.prototype, 'bgColor', {
-    get: function() { this.checkPA(); return this.getStyle('background-color'); },
-    set: function(value) { this.style.backgroundColor = value; },
-});
-
-
 
 // //////   ######  ##     ## ########  ######## ########     ########   #######  ##      ## ######## ########   ######  
 // //////  ##    ## ##     ## ##     ## ##       ##     ##    ##     ## ##     ## ##  ##  ## ##       ##     ## ##    ## 
@@ -417,8 +456,13 @@ Object.defineProperty(Element.prototype, 'bgColor', {
 // //////   ######   #######  ##        ######## ##     ##    ##         #######   ###  ###  ######## ##     ##  ######  
 
 
-
 Element.prototype.activateSuperPowers = function() {
+    // console.log('Element.prototype.activateSuperPowers');
+    
+    if (this.powersActivated) { return false };
+
+    // console.log('this:');
+    // console.dir(this);
     this.transform = {
         translate: {
             x: 0,
@@ -431,7 +475,56 @@ Element.prototype.activateSuperPowers = function() {
         animation_duration: 0.5,
     };
     this.powersActivated = true;
-    this.updateElementTransform();  
+    this.updateElementTransform();
+
+    // console.log('this.prototype:');
+    // console.dir(this.prototype);
+
+
+    Object.defineProperty( this, 'animated', {
+        get: function() { return this.transform.animated; },
+        set: function(value) {  this.transform.animated = value; this.updateElementAnimation(); },
+    });
+
+    Object.defineProperty( this, 'animation_duration', {
+        get: function() { return this.transform.animation_duration; },
+        set: function(value) {  this.transform.animation_duration = value; this.updateElementAnimation(); },
+    });
+
+    Object.defineProperty( this, 'x', {
+        get: function() { return this.transform.translate.x },
+        set: function(value) { this.transform.translate.x = value; this.updateElementTransform(); },
+    });
+
+    Object.defineProperty( this, 'y', {
+        get: function() { return this.transform.translate.y; },
+        set: function(value) { this.transform.translate.y = value; this.updateElementTransform(); },
+    });
+
+    Object.defineProperty( this, 'z', {
+        get: function() { return this.transform.translate.z },
+        set: function(value) { this.transform.translate.z = value; this.updateElementTransform(); },
+    });
+
+    Object.defineProperty( this, 'scaleXY', {
+        get: function() { return this.transform.scale },
+        set: function(value) { this.transform.scale = value; this.updateElementTransform(); },
+    });
+
+    Object.defineProperty( this, 'rotation', {
+        get: function() { return this.transform.rotation },
+        set: function(value) { this.transform.angle = value; this.updateElementTransform(); },
+    });
+
+    Object.defineProperty( this, 'opacity', {
+        get: function() { return this.getStyle('opacity'); },
+        set: function(value) { this.style.opacity = value; }
+    });
+
+    Object.defineProperty( this, 'bgColor', {
+        get: function() { return this.getStyle('background-color'); },
+        set: function(value) { this.style.backgroundColor = value; },
+    });
 };
 
 Element.prototype.checkPA = function() {
@@ -443,13 +536,17 @@ Element.prototype.checkPA = function() {
 
 Element.prototype.updateElementTransform = function()
 {
+    // console.log('Element.prototype.updateElementTransform');
     var value = [
         'translate3d(' + this.transform.translate.x + 'px, ' + this.transform.translate.y + 'px, 0)',
         'scale(' + this.transform.scale + ', ' + this.transform.scale + ')',
-        'rotateZ(' + this.transform.rotation + 'deg)'
+        'rotateZ(' + this.transform.angle + 'deg)'
         // 'rotate3d('+ this.transform.rx +','+ this.transform.ry +','+ this.transform.rz +','+  this.transform.rotation + 'deg)'
     ];
     value = value.join(" ");
+    // console.log('value: ' + value);
+    // console.log('value:');
+    // console.dir(value);
     this.style.webkitTransform = value;
     this.style.transform = value;
 }
@@ -469,38 +566,3 @@ Element.prototype.updateElementAnimation = function()
     }; 
 }
 
-
-Object.defineProperty(Element.prototype, 'animated', {
-    get: function() { this.checkPA(); return this.transform.animated; },
-    set: function(value) {  this.transform.animated = value; this.updateElementAnimation(); },
-});
-
-Object.defineProperty(Element.prototype, 'animation_duration', {
-    get: function() { this.checkPA(); return this.transform.animation_duration; },
-    set: function(value) {  this.transform.animation_duration = value; this.updateElementAnimation(); },
-});
-
-Object.defineProperty(Element.prototype, 'x', {
-    get: function() { this.checkPA(); return this.transform.translate.x },
-    set: function(value) { this.transform.translate.x = value; this.updateElementTransform(); },
-});
-
-Object.defineProperty(Element.prototype, 'y', {
-    get: function() { this.checkPA(); return this.transform.translate.y; },
-    set: function(value) { this.transform.translate.y = value; this.updateElementTransform(); },
-});
-
-Object.defineProperty(Element.prototype, 'z', {
-    get: function() { this.checkPA(); return this.transform.translate.z },
-    set: function(value) { this.transform.translate.z = value; this.updateElementTransform(); },
-});
-
-Object.defineProperty(Element.prototype, 'scaleXY', {
-    get: function() { this.checkPA(); return this.transform.scale },
-    set: function(value) { this.transform.scale = value; this.updateElementTransform(); },
-});
-
-Object.defineProperty(Element.prototype, 'rotation', {
-    get: function() { this.checkPA(); return this.transform.rotation },
-    set: function(value) { this.transform.rotation = value; this.updateElementTransform(); },
-});
