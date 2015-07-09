@@ -188,6 +188,8 @@ Element.prototype.setupDragging = function setupDragging(options)
 {
     if (this.debug) { console.log('Element.prototype.setupDragging'); };
 
+    var self = this;
+
     this.drag_activated = true;
 
     if (!options) 
@@ -202,8 +204,6 @@ Element.prototype.setupDragging = function setupDragging(options)
         if (!options.init_x ) { options.init_x = 0; };
         if (!options.init_y ) { options.init_y = 0; };
     }
-
-    var element = this;
 
     // var t3d = this.getStyle('transform');
     // var getStringBetweenParentheses = /\(([^)]+)\)/;
@@ -224,15 +224,15 @@ Element.prototype.setupDragging = function setupDragging(options)
 
     var processTick = function()
     {
-        if (this.debug) { console.log('Element processTick'); };
+        if (self.debug) { console.log('Element processTick'); };
 
-        element.style.transform = 'translate3d(' + self.current_position_x + 'px, ' + self.current_position_y + 'px, 0px)';
-        element.style.webkitTransform = 'translate3d(' + self.current_position_x + 'px, ' + self.current_position_y + 'px, 0px)';
+        self.style.transform = 'translate3d(' + self.current_position_x + 'px, ' + self.current_position_y + 'px, 0px)';
+        self.style.webkitTransform = 'translate3d(' + self.current_position_x + 'px, ' + self.current_position_y + 'px, 0px)';
     }
 
     var touchStart = function(e)
     {
-        if (this.debug) { console.log('Element touchStart'); };
+        if (self.debug) { console.log('Element touchStart'); };
 
         // if (self.settings.preventDefault) { e.preventDefault(); };
         // if (self.settings.stopPropagation) { e.stopPropagation(); };
@@ -245,7 +245,7 @@ Element.prototype.setupDragging = function setupDragging(options)
     }
     var touchMove = function(e)
     {
-        if (this.debug) { console.log('Element touchMove'); };
+        if (self.debug) { console.log('Element touchMove'); };
 
         // console.log('touchMove');
         // if (self.settings.preventDefault) { e.preventDefault(); };
@@ -274,7 +274,7 @@ Element.prototype.setupDragging = function setupDragging(options)
     }
     var touchEnd = function(e)
     {
-        if (this.debug) { console.log('Element touchEnd'); };
+        if (self.debug) { console.log('Element touchEnd'); };
         // console.log('touchEnd');
         // if (self.settings.preventDefault) { e.preventDefault(); };
         // if (self.settings.stopPropagation) { e.stopPropagation(); };
@@ -296,9 +296,9 @@ Element.prototype.setupDragging = function setupDragging(options)
         start_value_y = self.current_position_y;
     }
 
-    element.addEventListener('touchstart', touchStart,    false);
-    element.addEventListener('touchmove',  touchMove,     false);
-    element.addEventListener('touchend',   touchEnd,      false);
+    self.addEventListener('touchstart', touchStart,    false);
+    self.addEventListener('touchmove',  touchMove,     false);
+    self.addEventListener('touchend',   touchEnd,      false);
 };
 
 Element.prototype.removeOnTap = function( )
