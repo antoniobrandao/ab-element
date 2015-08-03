@@ -2,7 +2,7 @@
 
 DOM Element prototype addons.
 
-- - methods
+### methods
 - Element.prototype.hasClass // same as jQuery equivalent
 - Element.prototype.addClass // same as jQuery equivalent
 - Element.prototype.removeClass // same as jQuery equivalent
@@ -18,7 +18,7 @@ DOM Element prototype addons.
 - Element.prototype.activateCSSTransitions // sets up CSS transitions, accepts property value (can be 'all') and transition duration. Major vendor prefixes included
 - Element.prototype.deactivateCSSTransitions // removes CSS transitions
 
-- - properties
+### properties
 - x
 - y
 - z
@@ -40,23 +40,23 @@ $ npm install ab-element --save-dev
 	
 	require('ab-element');
 
-	var test = addChildToBody('DIV');
-	test.activateSuperPowers();
-	test.animated = true;
-	test.x = 50;
-	test.y = 50;
-	test.width = 50;
-	test.height = 50;
-	test.bgColor = 'red';
-	test.hasClass('some-class');
-	test.addClass('some-class');
-	test.removeClass('some-class');
-	test.toggleClass('some-class');
-	test.rotation = 45;
-	test.scale = 3;
-	test.changeElementType('IMG');
-	test.loadImage('http://lorempixel.com/400/200/', function(){ console.log('image loaded')}, true );
-	test.onTap(function(){ test.rotation = Math.random() * 360; });
+	var my_el = addChildToBody('DIV');
+	my_el.activateSuperPowers();
+	my_el.animated = true;
+	my_el.x = 50;
+	my_el.y = 50;
+	my_el.width = 50;
+	my_el.height = 50;
+	my_el.bgColor = 'red';
+	my_el.hasClass('some-class');
+	my_el.addClass('some-class');
+	my_el.removeClass('some-class');
+	my_el.toggleClass('some-class');
+	my_el.rotation = 45;
+	my_el.scale = 3;
+	my_el.changeElementType('IMG');
+	my_el.loadImage('http://lorempixel.com/400/200/', function(){ console.log('image loaded')}, true );
+	my_el.onTap(function(){ test.rotation = Math.random() * 360; });
 
 ## License
 

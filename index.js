@@ -398,6 +398,14 @@ Element.prototype.loadImageInside = function (src, onLoadCallBack, fadeIn, fadeI
     this.appendChild(img);
 };
 
+Element.prototype.loadImageBackground = function(src) {
+    this.style.background           =  'url(' + src + ') no-repeat center center';
+    this.style.webkitBackgroundSize =  'cover';
+    this.style.mozBackgroundSize    =  'cover';
+    this.style.oBackgroundSize      =  'cover';
+    this.style.backgroundSize       =  'cover';
+};
+
 Element.prototype.changeElementType = function(newElementType) {
     if (this.debug) { console.log('Element.prototype.getStyle'); };
     var e = this;
