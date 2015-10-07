@@ -398,12 +398,78 @@ Element.prototype.loadImageInside = function (src, onLoadCallBack, fadeIn, fadeI
     this.appendChild(img);
 };
 
-Element.prototype.loadImageBackground = function(src) {
-    this.style.background           =  'url(' + src + ') no-repeat center center';
+Element.prototype.loadImageBackground = function(src, onLoadCallBack) {
+    
     this.style.webkitBackgroundSize =  'cover';
     this.style.mozBackgroundSize    =  'cover';
     this.style.oBackgroundSize      =  'cover';
     this.style.backgroundSize       =  'cover';
+
+    if (!onLoadCallBack) {
+        this.style.background       =  'url(' + src + ') no-repeat center center';
+    }
+    else
+    {
+        var self = this;
+        var img = document.createElement('IMG');
+        img.style.display = 'none';
+
+        var processLoaded = function()
+        {
+            console.log('loadImageBackground ::: processLoaded');
+
+            document.body.removeChild(img);
+
+            self.style.background = 'url(' + src + ') no-repeat center center';
+
+            if (onLoadCallBack) { 
+                onLoadCallBack(); 
+            };
+        }
+
+        img.onload = function() { processLoaded(); }
+        img.setAttribute('src', src)
+        document.body.appendChild(img);
+    }
+}
+
+Element.prototype.loadImageBackgroundFadeIn = function(src, onLoadCallBack, disableFadeIn) {
+
+    this.style.webkitBackgroundSize = 'cover';
+    this.style.mozBackgroundSize    = 'cover';
+    this.style.oBackgroundSize      = 'cover';
+    this.style.backgroundSize       = 'cover';
+    this.style.opacity              = 0;
+
+    var self = this;
+    var img = document.createElement('IMG');
+    img.style.display = 'none';
+
+    var processLoaded = function()
+    {
+        document.body.removeChild(img);
+
+        self.style.background = 'url(' + src + ') no-repeat center center';
+
+        if (!disableFadeIn) {
+            if (!fadeInDuration) { var fadeInDuration = 0.5};
+            self.style.webkitTransition   = 'opacity ' + fadeInDuration + 's';
+            self.style.mozTransition      = 'opacity ' + fadeInDuration + 's';
+            self.style.msTransition       = 'opacity ' + fadeInDuration + 's';
+            self.style.oTransition        = 'opacity ' + fadeInDuration + 's';
+            setTimeout(function(){
+                self.style.opacity        = 1;
+            }, 50);
+        };
+
+        if (onLoadCallBack) { 
+            onLoadCallBack(); 
+        };
+    }
+
+    img.onload = function() { processLoaded(); }
+    img.setAttribute('src', src)
+    document.body.appendChild(img);
 };
 
 Element.prototype.changeElementType = function(newElementType) {

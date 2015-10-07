@@ -12,6 +12,8 @@ DOM Element prototype addons.
 - Element.prototype.activateSuperPowers // activates x, y, z, width, height, rotation, scale, animated, opacity
 - Element.prototype.loadImageInside //creates an IMG element inside with given src, provides two on-load options: callback and fade in
 - Element.prototype.loadImage // assumes element is IMG, applies src and provides two on-load options: callback and fade in
+- Element.prototype.loadImageBackground // (src, onLoadCallBack) loads an image as background-image
+- Element.prototype.loadImageBackgroundFadeIn  // (src, onLoadCallBack, disableFadeIn) loads an image as background-image and fades it in
 - Element.prototype.changeElementType // creates a new element of desired tagName, replaces it with current element and move in HTML contents
 - Element.prototype.getStyle // cross-browser helper to get style values
 - Element.prototype.onTap // sets up a touch "tap" handler, with distance tolerance (in px) and a click fallback in non-touch devices
