@@ -399,28 +399,30 @@ Element.prototype.loadImageInside = function (src, onLoadCallBack, fadeIn, fadeI
 };
 
 Element.prototype.loadImageBackground = function(src, onLoadCallBack) {
-    
-    this.style.webkitBackgroundSize =  'cover';
-    this.style.mozBackgroundSize    =  'cover';
-    this.style.oBackgroundSize      =  'cover';
-    this.style.backgroundSize       =  'cover';
+
+    var self = this;
 
     if (!onLoadCallBack) {
-        this.style.background       =  'url(' + src + ') no-repeat center center';
+        this.style.background           =  'url(' + src + ') no-repeat center center';
+        self.style.backgroundSize       =  'cover';
+        self.style.oBackgroundSize      =  'cover';
+        self.style.mozBackgroundSize    =  'cover';
+        self.style.webkitBackgroundSize =  'cover';
     }
     else
     {
-        var self = this;
         var img = document.createElement('IMG');
         img.style.display = 'none';
 
         var processLoaded = function()
         {
-            console.log('loadImageBackground ::: processLoaded');
-
             document.body.removeChild(img);
 
             self.style.background = 'url(' + src + ') no-repeat center center';
+            self.style.backgroundSize       =  'cover';
+            self.style.oBackgroundSize      =  'cover';
+            self.style.mozBackgroundSize    =  'cover';
+            self.style.webkitBackgroundSize =  'cover';
 
             if (onLoadCallBack) { 
                 onLoadCallBack(); 
@@ -431,19 +433,14 @@ Element.prototype.loadImageBackground = function(src, onLoadCallBack) {
         img.setAttribute('src', src)
         document.body.appendChild(img);
     }
-}
+};
 
 Element.prototype.loadImageBackgroundFadeIn = function(src, onLoadCallBack, disableFadeIn) {
-
-    this.style.webkitBackgroundSize = 'cover';
-    this.style.mozBackgroundSize    = 'cover';
-    this.style.oBackgroundSize      = 'cover';
-    this.style.backgroundSize       = 'cover';
-    this.style.opacity              = 0;
 
     var self = this;
     var img = document.createElement('IMG');
     img.style.display = 'none';
+    self.style.opacity = 0;
 
     var processLoaded = function()
     {
@@ -453,6 +450,11 @@ Element.prototype.loadImageBackgroundFadeIn = function(src, onLoadCallBack, disa
 
         if (!disableFadeIn) {
             if (!fadeInDuration) { var fadeInDuration = 0.5};
+            self.style.webkitBackgroundSize = 'cover';
+            self.style.mozBackgroundSize    = 'cover';
+            self.style.oBackgroundSize      = 'cover';
+            self.style.backgroundSize       = 'cover';
+            
             self.style.webkitTransition   = 'opacity ' + fadeInDuration + 's';
             self.style.mozTransition      = 'opacity ' + fadeInDuration + 's';
             self.style.msTransition       = 'opacity ' + fadeInDuration + 's';
